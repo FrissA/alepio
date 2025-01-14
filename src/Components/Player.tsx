@@ -4,18 +4,21 @@ import { Mesh } from "three";
 
 import { useGameStore } from "../zustland/store";
 
+const SPEED = 0.05
+
 const keyMap: {
   [key: string]: [number, number];
 } = {
-  KeyW: [0, 0.1], // Move up (positive Y)
-  KeyS: [0, -0.1], // Move down (negative Y)
-  KeyA: [-0.1, 0], // Move left (negative X)
-  KeyD: [0.1, 0], // Move right (positive X)
+  KeyW: [0, SPEED],
+  KeyS: [0, -SPEED],
+  KeyA: [-SPEED, 0],
+  KeyD: [SPEED, 0],
 };
 
 const Player: React.FC = () => {
   const meshRef = useRef<Mesh>(null);
   const setPlayerPosition = useGameStore((state) => state.setPlayerPosition);
+  const bounds = useGameStore((state) => state.bounds);
   const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
   const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
 
@@ -29,8 +32,12 @@ const Player: React.FC = () => {
       }
     });
 
+    // Clamp position to bounds
+    newPosition[0] = Math.max(bounds.minX, Math.min(bounds.maxX, newPosition[0]));
+    newPosition[1] = Math.max(bounds.minY, Math.min(bounds.maxY, newPosition[1]));
+
     setPosition(newPosition);
-    setPlayerPosition(newPosition); // Update the global store
+    setPlayerPosition(newPosition);
 
     if (meshRef.current) {
       meshRef.current.position.set(...newPosition);
