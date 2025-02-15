@@ -7,7 +7,7 @@ const Enemy: React.FC = () => {
   const meshRef = useRef<Mesh>(null);
   const playerPosition = useGameStore((state) => state.playerPosition);
   const bounds = useGameStore((state) => state.bounds);
-  const speed = 0.02;
+  const speed = 0.03;
 
   useFrame(() => {
     if (meshRef.current) {
@@ -16,17 +16,24 @@ const Enemy: React.FC = () => {
       const direction = new Vector3(
         playerPosition[0] - enemyPosition.x,
         playerPosition[1] - enemyPosition.y,
-        playerPosition[2] - enemyPosition.z
+        bounds.z
       );
 
-      direction.normalize().multiplyScalar(speed);
+      direction.normalize()
 
-      enemyPosition.x += direction.x;
-      enemyPosition.y += direction.y;
+      enemyPosition.x += direction.x*speed;
+      enemyPosition.y += direction.y*speed;
+      enemyPosition.z = bounds.z;
 
       // Clamp enemy position to bounds
-      enemyPosition.x = Math.max(bounds.minX, Math.min(bounds.maxX, enemyPosition.x));
-      enemyPosition.y = Math.max(bounds.minY, Math.min(bounds.maxY, enemyPosition.y));
+      enemyPosition.x = Math.max(
+        bounds.minX,
+        Math.min(bounds.maxX, enemyPosition.x)
+      );
+      enemyPosition.y = Math.max(
+        bounds.minY,
+        Math.min(bounds.maxY, enemyPosition.y)
+      );
 
       meshRef.current.rotation.x += 0.06;
       meshRef.current.rotation.y += 0.06;
@@ -34,10 +41,13 @@ const Enemy: React.FC = () => {
   });
 
   return (
-    <mesh ref={meshRef}>
-      <boxGeometry args={[0.2, 0.2, 0.2]} />
-      <meshStandardMaterial color="red" />
-    </mesh>
+    <>
+      <mesh ref={meshRef}>
+        <boxGeometry args={[0.2, 0.2, 0.2]} />
+        <meshStandardMaterial color="red" />
+      </mesh>
+      <ambientLight intensity={0.1} />
+    </>
   );
 };
 

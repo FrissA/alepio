@@ -22,14 +22,15 @@ const App: React.FC = () => {
   useEffect(() => {
     const updateBounds = () => {
       const aspectRatio = window.innerWidth / window.innerHeight;
-      const height = 5; // Set a fixed height for the game world
+      const height = 5.5; // Set a fixed height for the game world
       const width = height * aspectRatio; // Scale width based on the aspect ratio
 
       setBounds({
-        minX: -width / 2,
-        maxX: width / 2,
-        minY: -height / 2,
-        maxY: height / 2,
+        minX: -width,
+        maxX: width,
+        minY: -height,
+        maxY: height,
+        z: -2,
       });
     };
 

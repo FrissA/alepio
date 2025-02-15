@@ -12,9 +12,10 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
   const [wasShot, setWasShot] = useState(false);
   const meshRef = useRef<Mesh>(null);
   const { pointer } = useThree();
-  const speed = 0.05; // Bullet speed
+  const speed = 0.04; // Bullet speed
   const updateBullet = useGameStore((state) => state.updateBullet);
   const playerPosition = useGameStore((state) => state.playerPosition);
+  const bounds = useGameStore((state) => state.bounds);
 
   const bulletRef = useRef<{ original: Vector3; direction: Vector3 }>({
     original: new Vector3(),
@@ -24,19 +25,22 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
   useEffect(() => {
     // Set the target position for the bullet (where the cursor was when shot)
     if (meshRef.current && !wasShot) {
-      console.log("playerPosition", playerPosition);
-      console.log("pointer", pointer);
+      // console.log("playerPosition", playerPosition);
       const position = new Vector3(
         playerPosition[0],
         playerPosition[1],
         playerPosition[2]
       );
-      meshRef.current.position.set(position.x,position.y,0)
+      meshRef.current.position.set(position.x, position.y, bounds.z);
       bulletRef.current.original = position;
-      console.log("position", position);
-      const target = new Vector3(pointer.x, pointer.y, 0);
+      // console.log("position", position);
+      const target = new Vector3(
+        pointer.x * bounds.maxX,
+        pointer.y * bounds.maxY,
+        bounds.z
+      );
       bulletRef.current.direction = target;
-      console.log("target", target);
+      // console.log("target", target);
       setWasShot(true);
       updateBullet({
         id,
@@ -45,25 +49,9 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
         outOfBounds: false,
       });
     }
-  }, [wasShot, playerPosition, pointer, updateBullet, id]);
+  }, [wasShot, playerPosition, pointer, updateBullet, id, bounds]);
 
   // Update bullet position every frame
-
-  useEffect(() => {
-    const a = setInterval(() => {
-      const direction = new Vector3()
-        .subVectors(bulletRef.current.original, bulletRef.current.direction)
-        .normalize();
-      console.log("bulletRef.current.original", bulletRef.current.original);
-      console.log("bulletRef.current.direction", bulletRef.current.direction);
-      console.log("meshRef.current.position", meshRef.current?.position);
-      console.log("direction", direction);
-      console.log("meshRef.current", meshRef.current);
-    }, 2000);
-
-    return () => clearInterval(a);
-  }, []);
-
   useFrame(() => {
     if (meshRef.current) {
       // Move the bullet towards the target
@@ -78,7 +66,7 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
       // console.log("meshRef.current.position", meshRef.current.position);
       // console.log("direction", direction);
 
-      meshRef.current.position.add(direction.multiplyScalar(-1));
+      meshRef.current.position.add(direction.multiplyScalar(-speed));
       // Optionally, remove the bullet if it goes out of bounds
       let outOfBounds = false;
       if (

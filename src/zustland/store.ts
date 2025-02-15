@@ -7,13 +7,9 @@ interface GameStore {
     maxX: number;
     minY: number;
     maxY: number;
+    z: number;
   };
-  setBounds: (bounds: {
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-  }) => void;
+  setBounds: (bounds: GameStore["bounds"]) => void;
   playerPosition: [number, number, number];
   setPlayerPosition: (position: [number, number, number]) => void;
   cursorPosition: Vector3;
@@ -37,8 +33,10 @@ interface GameStore {
 }
 
 export const useGameStore = create<GameStore>((set) => ({
-  bounds: { minX: -5, maxX: 5, minY: -5, maxY: 5 },
-  playerPosition: [0, 0, 0],
+  bounds: { minX: -1, maxX: 1, minY: -1, maxY: 1, z: -2 },
+  // With this initial position, the player is in the middle of the screen
+  // and the edge of the world are the edges of the screen
+  playerPosition: [0, 0, -2],
   cursorPosition: new Vector3(0, 0, 0),
   bullets: {},
   setBounds: (bounds) => set({ bounds }),
