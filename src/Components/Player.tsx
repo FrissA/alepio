@@ -17,13 +17,13 @@ const keyMap: {
 
 const Player: React.FC = () => {
   const meshRef = useRef<Mesh>(null);
-  const setPlayerPosition = useGameStore((state) => state.setPlayerPosition);
-  const playerPosition = useGameStore((state) => state.playerPosition);
+  const setPlayerRawPosition = useGameStore((state) => state.setPlayerRawPosition);
+  const playerRawPosition = useGameStore((state) => state.playerRawPosition);
   const bounds = useGameStore((state) => state.bounds);
   const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
 
   useFrame(() => {
-    const newPosition = [...playerPosition] as [number, number, number];
+    const newPosition = [...playerRawPosition] as [number, number, number];
 
     keysPressed.forEach((key) => {
       if (keyMap[key]) {
@@ -32,7 +32,7 @@ const Player: React.FC = () => {
       }
     });
 
-    // Clamp position to bounds
+    // Keep player within bounds
     newPosition[0] = Math.max(
       bounds.minX,
       Math.min(bounds.maxX, newPosition[0])
@@ -42,12 +42,12 @@ const Player: React.FC = () => {
       Math.min(bounds.maxY, newPosition[1])
     );
 
-    setPlayerPosition(newPosition);
-    // console.log("newPosition", newPosition);
+    setPlayerRawPosition(newPosition);
 
     if (meshRef.current) {
       meshRef.current.position.set(...newPosition);
     }
+
   });
 
   useEffect(() => {
