@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Mesh } from "three";
+import { Mesh, Vector3 } from "three";
 
-import { useGameStore } from "../zustland/store";
+import { useGameStore } from "@zustand/store";
+import { GameStatuses } from "@zustand/GameStore";
 
 const SPEED = 0.05;
 
@@ -16,11 +17,40 @@ const keyMap: {
 };
 
 const Player: React.FC = () => {
+  const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
   const meshRef = useRef<Mesh>(null);
-  const setPlayerRawPosition = useGameStore((state) => state.setPlayerRawPosition);
+
+  const setPlayerRawPosition = useGameStore(
+    (state) => state.setPlayerRawPosition
+  );
   const playerRawPosition = useGameStore((state) => state.playerRawPosition);
   const bounds = useGameStore((state) => state.bounds);
-  const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
+  const enemies = useGameStore((state) => state.enemies);
+  
+  const setGameStatus = useGameStore((state) => state.setGameStatus);
+  const resetGame = useGameStore((state) => state.resetGame);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      setKeysPressed((prev) => new Set(prev).add(event.code));
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      setKeysPressed((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(event.code);
+        return newSet;
+      });
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   useFrame(() => {
     const newPosition = [...playerRawPosition] as [number, number, number];
@@ -48,29 +78,19 @@ const Player: React.FC = () => {
       meshRef.current.position.set(...newPosition);
     }
 
+    Object.values(enemies).forEach((enemy) => {
+      if (enemy.position && meshRef.current) {
+        const closeToPlayer = new Vector3().subVectors(
+          enemy.position,
+          meshRef.current.position
+        );
+        if (closeToPlayer.length() < 0.25) {
+          setGameStatus(GameStatuses.dead);
+          resetGame();
+        }
+      }
+    });
   });
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      setKeysPressed((prev) => new Set(prev).add(event.code));
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(event.code);
-        return newSet;
-      });
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
 
   return (
     <mesh ref={meshRef}>

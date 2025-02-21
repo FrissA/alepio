@@ -3,7 +3,7 @@ import { Vector3 } from "three";
 
 import { GameStore } from "./GameStore";
 import { PlayerStore } from "./PlayerStore";
-import { spawnFarFromPlayer } from "../helpers";
+import { spawnFarFromPlayer } from "@helpers";
 
 export interface EnemiesStore {
   enemies: {
@@ -15,7 +15,13 @@ export interface EnemiesStore {
   };
 
   addEnemy: () => void;
+  updateEnemy: (enemy: {
+    id: string;
+    position: Vector3;
+    target?: Vector3;
+  }) => void;
   removeEnemy: (enemy: { id: string }) => void;
+  resetEnemies: () => void;
 }
 
 export const createEnemiesSlice: StateCreator<
@@ -44,10 +50,20 @@ export const createEnemiesSlice: StateCreator<
         },
       };
     }),
+  updateEnemy: (enemy: { id: string; position: Vector3; target?: Vector3 }) =>
+    set((state) => {
+      if (state.enemies[enemy.id]) {
+        return {
+          enemies: { ...state.enemies, [enemy.id]: enemy },
+        };
+      }
+      return state;
+    }),
   removeEnemy: (enemy: { id: string }) =>
     set((state) => {
       const enemies = { ...state.enemies };
       delete enemies[enemy.id];
       return { enemies };
     }),
+  resetEnemies: () => set(() => ({ enemies: {} })),
 });

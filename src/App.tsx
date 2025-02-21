@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 
-import { useGameStore } from "./zustland/store";
-import Enemy from "./Components/Enemy";
-import Player from "./Components/Player";
-import Bullet from "./Components/Bullet";
+import { useGameStore } from "@zustand/store";
+import { GameStatuses } from "@zustand/GameStore";
+
+import Player from "@components/Player";
+import EnemyManager from "@components/EnemyManager";
+import BulletManager from "@components/BulletManager";
+import StartMenu from "@components/StartMenu";
+import YouDied from "@components/YouDied";
 
 const App: React.FC = () => {
   const setBounds = useGameStore((state) => state.setBounds);
-
-  const bullets = useGameStore((state) => state.bullets);
-  const addBullet = useGameStore((state) => state.addBullet);
-  const cleanUpBullets = useGameStore((state) => state.cleanUpBullets);
-
-  const enemies = useGameStore((state) => state.enemies);
-  const addEnemy = useGameStore((state) => state.addEnemy);
+  const gameStatus = useGameStore((state) => state.gameStatus);
+  const score = useGameStore((state) => state.score);
+  const maxScore = useGameStore((state) => state.maxScore);
 
   useEffect(() => {
     const updateBounds = () => {
@@ -39,46 +39,29 @@ const App: React.FC = () => {
     };
   }, [setBounds]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      // When the bullet is shot, we create it and add it to the state
-      addBullet();
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [addBullet]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      // When the bullet is shot, we create it and add it to the state
-      addEnemy();
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [addEnemy]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      //Every some seconds, clean up bullets out of bounds
-      cleanUpBullets();
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, [cleanUpBullets]);
-
   return (
-    <Canvas style={{ height: "100vh", width: "100vw" }}>
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[2, 2, 2]} />
-      <Player />
-      {Object.values(enemies).map((enemy) => (
-        <Enemy key={enemy.id} {...enemy} />
-      ))}
-
-      {Object.values(bullets).map((bullet) => (
-        <Bullet key={bullet.id} {...bullet} />
-      ))}
-    </Canvas>
+    <>
+      {gameStatus === GameStatuses.menu && <StartMenu />}
+      {/* TODO: Move to separate component */}
+      {gameStatus === GameStatuses.running && (
+        <>
+          <h1 style={{ position: "absolute", top: "10px", left: "10px", fontSize: "30px" }}>
+            Score: {score}
+          </h1>
+          <h1 style={{ position: "absolute", top: "60px", left: "10px", fontSize: "15px" }}>
+            Max score: {maxScore}
+          </h1>
+          <Canvas style={{ height: "100vh", width: "100vw" }}>
+            <ambientLight intensity={0.8} />
+            <directionalLight position={[2, 2, 2]} />
+            <Player />
+            <EnemyManager />
+            <BulletManager />
+          </Canvas>
+        </>
+      )}
+      {gameStatus === GameStatuses.dead && <YouDied />}
+    </>
   );
 };
 

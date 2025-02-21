@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
 import { Mesh, Vector3 } from "three";
+import { useFrame, useThree } from "@react-three/fiber";
 
-import { useGameStore } from "../zustland/store";
+import { useGameStore } from "@zustand/store";
 
 interface BulletProps {
   id: string;
@@ -42,12 +42,6 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
       bulletRef.current.direction = target;
 
       setWasShot(true);
-      // updateBullet({
-      //   id,
-      //   position: bulletRef.current.original,
-      //   target: bulletRef.current.direction,
-      //   outOfBounds: false,
-      // });
     }
   }, [wasShot, playerRawPosition, pointer, updateBullet, id, bounds]);
 

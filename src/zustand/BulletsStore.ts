@@ -21,6 +21,7 @@ export interface BulletsStore {
   }) => void;
   removeBullet: (bullet: { id: string }) => void;
   cleanUpBullets: () => void;
+  resetBullets: () => void;
 }
 
 export const createBulletsSlice: StateCreator<
@@ -73,4 +74,5 @@ export const createBulletsSlice: StateCreator<
         ),
       };
     }),
+  resetBullets: () => set(() => ({ bullets: {} })),
 });

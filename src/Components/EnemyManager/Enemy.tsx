@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
 import { Mesh, Vector3 } from "three";
-import { useGameStore } from "../zustland/store";
+import { useFrame } from "@react-three/fiber";
+
+import { useGameStore } from "@zustand/store";
 
 interface EnemyProps {
   id: string;
@@ -9,13 +10,20 @@ interface EnemyProps {
 }
 
 const Enemy: React.FC<EnemyProps> = ({ id, position }) => {
+  const [speed, setSpeed] = useState(0.03);
   const meshRef = useRef<Mesh>(null);
+
   const playerRawPosition = useGameStore((state) => state.playerRawPosition);
   const bounds = useGameStore((state) => state.bounds);
+
   const bullets = useGameStore((state) => state.bullets);
-  const removeEnemy = useGameStore((state) => state.removeEnemy);
   const removeBullet = useGameStore((state) => state.removeBullet);
-  const [speed, setSpeed] = useState(0.03);
+
+  const updateEnemy = useGameStore((state) => state.updateEnemy);
+  const removeEnemy = useGameStore((state) => state.removeEnemy);
+  
+  const score = useGameStore((state) => state.score);
+  const setScore = useGameStore((state) => state.setScore);
 
   useEffect(() => {
     if (meshRef.current) {
@@ -52,6 +60,10 @@ const Enemy: React.FC<EnemyProps> = ({ id, position }) => {
       meshRef.current.rotation.x += 0.06;
       meshRef.current.rotation.y += 0.06;
 
+      updateEnemy({
+        id,
+        position: enemyPosition,
+      });
       // Check if enemy is hit by a bullet
       Object.values(bullets).forEach((bullet) => {
         if (bullet.position) {
@@ -66,6 +78,7 @@ const Enemy: React.FC<EnemyProps> = ({ id, position }) => {
             setSpeed(0);
             removeEnemy({ id });
             removeBullet({ id: bullet.id });
+            setScore(score + 1);
           }
         }
       });
