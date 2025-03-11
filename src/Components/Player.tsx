@@ -2,8 +2,11 @@ import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Mesh, Vector3 } from "three";
 
+import { useSound } from "@hooks/useSound";
 import { useGameStore } from "@zustand/store";
 import { GameStatuses } from "@zustand/GameStore";
+
+import playerDies from "@assets/sounds/playerDies.wav";
 
 const SPEED = 0.05;
 
@@ -26,9 +29,11 @@ const Player: React.FC = () => {
   const playerRawPosition = useGameStore((state) => state.playerRawPosition);
   const bounds = useGameStore((state) => state.bounds);
   const enemies = useGameStore((state) => state.enemies);
-  
+
   const setGameStatus = useGameStore((state) => state.setGameStatus);
   const resetGame = useGameStore((state) => state.resetGame);
+
+  const deathAudio = useSound(playerDies);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -85,6 +90,7 @@ const Player: React.FC = () => {
           meshRef.current.position
         );
         if (closeToPlayer.length() < 0.25) {
+          deathAudio.play();
           setGameStatus(GameStatuses.dead);
           resetGame();
         }

@@ -2,7 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Mesh, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 
+import { useSound } from "@hooks/useSound";
 import { useGameStore } from "@zustand/store";
+
+import enemyDies from "@assets/sounds/enemyDies.wav";
 
 interface EnemyProps {
   id: string;
@@ -21,9 +24,11 @@ const Enemy: React.FC<EnemyProps> = ({ id, position }) => {
 
   const updateEnemy = useGameStore((state) => state.updateEnemy);
   const removeEnemy = useGameStore((state) => state.removeEnemy);
-  
+
   const score = useGameStore((state) => state.score);
   const setScore = useGameStore((state) => state.setScore);
+
+  const killAudio = useSound(enemyDies);
 
   useEffect(() => {
     if (meshRef.current) {
@@ -73,6 +78,7 @@ const Enemy: React.FC<EnemyProps> = ({ id, position }) => {
           );
           if (closeToBullet.length() < 0.25) {
             // Enemy is hit by a bullet
+            killAudio.play();
             enemyPosition.x = bounds.maxX;
             enemyPosition.y = bounds.maxY;
             setSpeed(0);

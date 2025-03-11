@@ -2,7 +2,10 @@ import React, { useRef, useEffect, useState } from "react";
 import { Mesh, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 
+import { useSound } from "@hooks/useSound";
 import { useGameStore } from "@zustand/store";
+
+import bulletSound from "@assets/sounds/bullet.wav";
 
 interface BulletProps {
   id: string;
@@ -22,9 +25,14 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
     direction: new Vector3(),
   });
 
+  const bulletAudio = useSound(bulletSound);
+
   useEffect(() => {
     // Set the target position for the bullet (where the cursor was when shot)
     if (meshRef.current && !wasShot) {
+      
+      bulletAudio.play();
+
       const position = new Vector3(
         playerRawPosition[0],
         playerRawPosition[1],
@@ -43,7 +51,7 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
 
       setWasShot(true);
     }
-  }, [wasShot, playerRawPosition, pointer, updateBullet, id, bounds]);
+  }, [bulletAudio, wasShot, playerRawPosition, pointer, updateBullet, id, bounds]);
 
   // Update bullet position every frame
   useFrame(() => {

@@ -20,10 +20,12 @@ export interface GameStore {
   score: number;
   maxScore: number;
   gameStatus: GameStatuses;
+  isAudioEnabled: boolean;
 
   setBounds: (bounds: GameStore["bounds"]) => void;
   setGameStatus: (status: GameStore["gameStatus"]) => void;
   setScore: (score: number) => void;
+  toggleAudio: () => void;
   resetGame: () => void;
 }
 
@@ -37,6 +39,7 @@ export const createGameSlice: StateCreator<
   gameStatus: GameStatuses.menu,
   score: 0,
   maxScore: 0,
+  isAudioEnabled: true,
   setBounds: (bounds) => set({ bounds }),
   setGameStatus: (status) => set({ gameStatus: status }),
   setScore: (score) =>
@@ -48,6 +51,7 @@ export const createGameSlice: StateCreator<
       return { ...state, score, maxScore };
     }),
 
+  toggleAudio: () => set((state) => ({ isAudioEnabled: !state.isAudioEnabled })),
   resetGame: () => {
     get().resetEnemies();
     get().resetBullets();
