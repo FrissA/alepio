@@ -40,13 +40,13 @@ const YouDied: React.FC = () => {
           You Died
         </h1>
         <h2 className="text-2xl font-[Orbitron] mt-4 animate-fade-in">
-          Your score: <span className="text-violet-400">{score}</span>
+          Your score: <span className="text-white">{score}</span>
         </h2>
         <h3 className="text-xl font-[Orbitron] mt-2 animate-fade-in">
-          Max score: <span className="text-violet-400">{maxScore}</span>
+          Max score: <span className="text-white">{maxScore}</span>
         </h3>
         <p className="mt-4 font-[Orbitron] text-lg animate-flicker">
-          Press the <span className="text-green-400">space bar</span> to go back
+          Press the <span className="text-white">space bar</span> to go back
           to the menu
         </p>
       </div>

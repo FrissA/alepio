@@ -35,7 +35,7 @@ const StartScreen: React.FC = () => {
           Welcome to AlepIO
         </h1>
         <p className="mt-4 font-[Orbitron] text-lg animate-flicker">
-          Press the <span className="text-red-500">space bar</span> to start
+          Press the <span className="text-white">space bar</span> to start
         </p>
       </div>
     </div>

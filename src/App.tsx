@@ -57,13 +57,13 @@ const App: React.FC = () => {
       {/* TODO: Move to separate component */}
       {gameStatus === GameStatuses.running && (
         <>
-          <h1 className="absolute top-4 left-4 text-green-400 font-[Orbitron] text-md opacity-90">
+          <h3 className="absolute top-4 left-4 text-white font-[Orbitron] opacity-90">
             Score: {score}
-          </h1>
+          </h3>
           {/* Next onw with small text */}
-          <h1 className="absolute top-14 left-4 text-green-400 font-[Orbitron] text-2px opacity-90">
+          <h3 className="absolute top-14 left-4 text-white font-[Orbitron] opacity-90">
             Max score: {maxScore}
-          </h1>
+          </h3>
           {/* Top right speaker icon clickable */}
           <div>
             <div
