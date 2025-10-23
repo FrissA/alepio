@@ -7,6 +7,7 @@ import StartMenu from "@components/StartMenu";
 import YouDied from "@components/YouDied";
 import GameOverlay from "@components/GameOverlay";
 import Socials from "@components/Socials";
+import ScoreTracker from "@components/ScoreTracker";
 
 const App: React.FC = () => {
   const setBounds = useGameStore((state) => state.setBounds);
@@ -39,7 +40,12 @@ const App: React.FC = () => {
     <div>
       {gameStatus === GameStatuses.menu && <StartMenu />}
       {/* TODO: Move to separate component */}
-      {gameStatus === GameStatuses.running && <GameOverlay />}
+      {gameStatus === GameStatuses.running && (
+        <>
+          <GameOverlay />
+          <ScoreTracker />
+        </>
+      )}
       {gameStatus === GameStatuses.dead && <YouDied />}
       <Socials />
     </div>

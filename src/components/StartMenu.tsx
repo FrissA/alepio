@@ -4,6 +4,7 @@ import { useGameStore } from "@zustand/store";
 import { GameStatuses } from "@zustand/GameStore";
 import { useSound } from "@hooks/useSound";
 import { isMobileDevice } from "@helpers/index";
+import LoginButton from "@components/LoginButton";
 
 import actionSound from "@assets/sounds/action.wav";
 
@@ -81,6 +82,9 @@ const StartScreen: React.FC = () => {
             </p>
           </>
         )}
+        <div className="mt-6 flex justify-center">
+          <LoginButton />
+        </div>
       </div>
     </div>
   );

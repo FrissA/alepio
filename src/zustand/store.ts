@@ -4,6 +4,8 @@ import { createGameSlice, GameStore } from "./GameStore";
 import { createPlayerSlice, PlayerStore } from "./PlayerStore";
 import { createEnemiesSlice, EnemiesStore } from "./EnemiesStore";
 import { BulletsStore, createBulletsSlice } from "./BulletsStore";
+import { AuthStore, createAuthStore } from "./AuthStore";
+import { GuestStore, createGuestStore } from "./GuestStore";
 import { persist } from "zustand/middleware";
 
 export const useGameStore = create<
@@ -25,3 +27,11 @@ export const useGameStore = create<
     }
   )
 );
+
+export const useAuthStore = create<AuthStore>()((set) => ({
+  ...createAuthStore(set),
+}));
+
+export const useGuestStore = create<GuestStore>()((set, get) => ({
+  ...createGuestStore(set, get),
+}));
