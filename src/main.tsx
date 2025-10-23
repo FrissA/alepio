@@ -21,7 +21,7 @@ export const Root = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/auth/github/callback" element={<AuthCallback />} />
       </Routes>
     </BrowserRouter>
   );
