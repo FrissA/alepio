@@ -8,15 +8,18 @@ const BulletManager: React.FC = () => {
   const bullets = useGameStore((state) => state.bullets);
   const addBullet = useGameStore((state) => state.addBullet);
   const cleanUpBullets = useGameStore((state) => state.cleanUpBullets);
+  const isMobileControls = useGameStore((state) => state.isMobileControls);
+
+  const bulletInterval = isMobileControls ? 1500 : 1000;
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       // When the bullet is shot, we create it and add it to the state
       addBullet();
-    }, 1000);
+    }, bulletInterval);
 
     return () => clearInterval(intervalId);
-  }, [addBullet]);
+  }, [addBullet, bulletInterval]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {

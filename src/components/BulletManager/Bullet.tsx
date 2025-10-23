@@ -19,6 +19,8 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
   const updateBullet = useGameStore((state) => state.updateBullet);
   const playerRawPosition = useGameStore((state) => state.playerRawPosition);
   const bounds = useGameStore((state) => state.bounds);
+  const isMobileControls = useGameStore((state) => state.isMobileControls);
+  const enemies = useGameStore((state) => state.enemies);
 
   const bulletRef = useRef<{ original: Vector3; direction: Vector3 }>({
     original: new Vector3(),
@@ -42,16 +44,44 @@ const Bullet: React.FC<BulletProps> = ({ id }) => {
      
       bulletRef.current.original = position;
 
-      const target = new Vector3(
-        pointer.x * bounds.maxX,
-        pointer.y * bounds.maxY,
-        bounds.z
-      );
+      let target: Vector3;
+
+      if (isMobileControls) {
+        // Mobile: Auto-aim at closest enemy
+        const enemyList = Object.values(enemies).filter(e => e.position);
+        
+        if (enemyList.length > 0) {
+          // Find closest enemy
+          let closestEnemy = enemyList[0];
+          let minDistance = position.distanceTo(closestEnemy.position!);
+          
+          for (const enemy of enemyList) {
+            const distance = position.distanceTo(enemy.position!);
+            if (distance < minDistance) {
+              minDistance = distance;
+              closestEnemy = enemy;
+            }
+          }
+          
+          target = closestEnemy.position!.clone();
+        } else {
+          // No enemies, shoot forward
+          target = new Vector3(position.x, bounds.maxY, bounds.z);
+        }
+      } else {
+        // Desktop: Aim at cursor
+        target = new Vector3(
+          pointer.x * bounds.maxX,
+          pointer.y * bounds.maxY,
+          bounds.z
+        );
+      }
+
       bulletRef.current.direction = target;
 
       setWasShot(true);
     }
-  }, [bulletAudio, wasShot, playerRawPosition, pointer, updateBullet, id, bounds]);
+  }, [bulletAudio, wasShot, playerRawPosition, pointer, updateBullet, id, bounds, isMobileControls, enemies]);
 
   // Update bullet position every frame
   useFrame(() => {

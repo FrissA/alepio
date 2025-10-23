@@ -17,4 +17,13 @@ const spawnFarFromPlayer = (
   return new Vector3(randomX, randomY, bounds.z);
 };
 
-export { spawnFarFromPlayer };
+const isMobileDevice = () => {
+  // Check if the device has touch support and is likely mobile
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isSmallScreen = window.innerWidth <= 768;
+  
+  return hasTouch && (isMobileUserAgent || isSmallScreen);
+};
+
+export { spawnFarFromPlayer, isMobileDevice };
