@@ -11,15 +11,22 @@ const YouDied: React.FC = () => {
   const score = useGameStore((state) => state.score);
   const setScore = useGameStore((state) => state.setScore);
   const maxScore = useGameStore((state) => state.maxScore);
+  const isMobileControls = useGameStore((state) => state.isMobileControls);
 
   const actionAudio = useSound(actionSound);
 
+  const handleBackToMenu = () => {
+    actionAudio.play();
+    setGameStatus(GameStatuses.menu);
+    setScore(0);
+  };
+
   useEffect(() => {
+    if (isMobileControls) return; // Don't listen for keyboard on mobile
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
-        actionAudio.play();
-        setGameStatus(GameStatuses.menu);
-        setScore(0);
+        handleBackToMenu();
       }
     };
 
@@ -28,7 +35,7 @@ const YouDied: React.FC = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [actionAudio, setScore, setGameStatus]);
+  }, [isMobileControls]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-black text-green-400 font-mono">
@@ -45,10 +52,21 @@ const YouDied: React.FC = () => {
         <h3 className="text-xl font-[Orbitron] mt-2 animate-fade-in">
           Max score: <span className="text-white">{maxScore}</span>
         </h3>
-        <p className="mt-4 font-[Orbitron] text-lg animate-flicker">
-          Press the <span className="text-white">space bar</span> to go back
-          to the menu
-        </p>
+        {isMobileControls ? (
+          <button
+            onClick={handleBackToMenu}
+            className="mt-6 px-8 py-3 bg-green-500 text-white font-[Orbitron] font-bold rounded-lg 
+            hover:bg-green-400 active:bg-green-600 transition-colors uppercase tracking-wide
+            border-2 border-green-300 shadow-lg"
+          >
+            Back to Menu
+          </button>
+        ) : (
+          <p className="mt-4 font-[Orbitron] text-lg animate-flicker">
+            Press the <span className="text-white">space bar</span> to go back
+            to the menu
+          </p>
+        )}
       </div>
     </div>
   );

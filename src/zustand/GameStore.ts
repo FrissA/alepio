@@ -21,11 +21,13 @@ export interface GameStore {
   maxScore: number;
   gameStatus: GameStatuses;
   isAudioEnabled: boolean;
+  isMobileControls: boolean;
 
   setBounds: (bounds: GameStore["bounds"]) => void;
   setGameStatus: (status: GameStore["gameStatus"]) => void;
   setScore: (score: number) => void;
   toggleAudio: () => void;
+  setMobileControls: (isMobile: boolean) => void;
   resetGame: () => void;
 }
 
@@ -40,6 +42,7 @@ export const createGameSlice: StateCreator<
   score: 0,
   maxScore: 0,
   isAudioEnabled: true,
+  isMobileControls: false,
   setBounds: (bounds) => set({ bounds }),
   setGameStatus: (status) => set({ gameStatus: status }),
   setScore: (score) =>
@@ -52,6 +55,7 @@ export const createGameSlice: StateCreator<
     }),
 
   toggleAudio: () => set((state) => ({ isAudioEnabled: !state.isAudioEnabled })),
+  setMobileControls: (isMobile) => set({ isMobileControls: isMobile }),
   resetGame: () => {
     get().resetEnemies();
     get().resetBullets();
